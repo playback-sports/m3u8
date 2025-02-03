@@ -469,6 +469,10 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 	p.buf.WriteString("#EXT-X-MEDIA-SEQUENCE:")
 	p.buf.WriteString(strconv.FormatUint(p.SeqNo, 10))
 	p.buf.WriteRune('\n')
+	if p.ServerControl != "" {
+		p.buf.WriteString("#EXT-X-SERVER-CONTROL:" + p.ServerControl)
+		p.buf.WriteRune('\n')
+	}
 	p.buf.WriteString("#EXT-X-TARGETDURATION:")
 	p.buf.WriteString(strconv.FormatInt(int64(math.Ceil(p.TargetDuration)), 10)) // due section 3.4.2 of M3U8 specs EXT-X-TARGETDURATION must be integer
 	p.buf.WriteRune('\n')
@@ -555,6 +559,11 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 			p.buf.WriteString(p.WV.VideoSAR)
 			p.buf.WriteRune('\n')
 		}
+	}
+	if p.skip != nil {
+		p.buf.WriteString("#EXT-X-SKIP:")
+		p.buf.WriteString(strconv.FormatUint(uint64(*p.skip), 10))
+		p.buf.WriteRune('\n')
 	}
 
 	var (
@@ -880,6 +889,11 @@ func (p *MediaPlaylist) SetCustomSegmentTag(tag CustomTag) error {
 	last.Custom[tag.TagName()] = tag
 
 	return nil
+}
+
+// SetSkip
+func (p *MediaPlaylist) SetSkip(replace uint) {
+	p.skip = &replace
 }
 
 // Version returns the current playlist version number
