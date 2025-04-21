@@ -561,7 +561,7 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 		}
 	}
 	if p.skip != nil {
-		p.buf.WriteString("#EXT-X-SKIP:")
+		p.buf.WriteString("#EXT-X-SKIP:SKIPPED-SEGMENTS=")
 		p.buf.WriteString(strconv.FormatUint(uint64(*p.skip), 10))
 		p.buf.WriteRune('\n')
 	}
